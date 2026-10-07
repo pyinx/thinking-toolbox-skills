@@ -12,7 +12,6 @@ thinking-toolbox-skills/           # 项目根即技能根 BASE
 │   └── history-format.md          # history 文件规范 + 索引格式
 ├── subskills/<name>/SKILL.md      # 27 个思维模型（被主 skill 读取，不注册为独立技能）
 ├── history/                       # 运行时产出：YYYY-MM-DD/*.md + INDEX.md
-└── .workbuddy/memory/             # 工作区记忆（宿主维护，可删除）
 ```
 
 ## 两层回答
