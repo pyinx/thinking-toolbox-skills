@@ -1,0 +1,6 @@
+.DS_Store
+
+# 个人问答记录默认不入库；如需跨机同步删除下面两行
+history/*
+!history/.gitkeep
+.workbuddy
