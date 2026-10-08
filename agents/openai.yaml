@@ -1,0 +1,4 @@
+interface:
+  display_name: "Thinking Toolbox｜思维工具箱"
+  short_description: "27 个思维模型协同分析：澄清问题、联网取证、各模型作答、交叉讨论、综合结论"
+  default_prompt: "使用 $thinking-toolbox 分析这个问题，用多个思维模型一起看。"

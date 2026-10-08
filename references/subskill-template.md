@@ -1,10 +1,11 @@
 # subskill 统一模板与写作要求
 
 本文件是 `subskills/<name>/SKILL.md` 的写作规范。新增或修改 subskill 时严格遵循。
+**结构验收统一跑 `python3 scripts/validate.py`**，本文件不再维护 shell 命令。
 
-## 六段式模板
+## 六段式模板（重点模型为七段）
 
-每个 subskill 文件 45~120 行，中文，结构固定为：
+每个 subskill 文件 45~120 行，中文。有 `references/` 的重点模型在「何时不适用」后追加两段。
 
 ```markdown
 ---
@@ -32,6 +33,30 @@ description: >
 ## 何时不适用
 <2~4 条，帮助主 skill 在追问时判断是否换将；与其他易混模型的分工说明。>
 ```
+
+### 第七、八段（仅重点模型，约 6 个）
+
+分层门槛（满足任一才建 `references/`）：①内联可枚举清单 ≥12 条 ②正文 ≥1200 字符且含长枚举
+③结论需原文/战例/基准率支撑 ④与其他模型分工需共享判据表。
+
+```markdown
+## 深入读取
+
+按问题类型按需 Read，不要一次全读：
+
+| 触发条件 | 读取 |
+| --- | --- |
+| <可判定的动作条件，不用"深入时"这类模糊词> | `references/<file>.md` |
+
+**读完后回答必须出现**：①<具体产物> ②<具体产物>；读过 X 则须指明 <具体要求>。
+
+## Reference Index
+
+- `references/<file>.md` — <一句话用途>
+```
+
+**「读完后回答必须出现」是防注水的核心**：没有回填要求的 reference 不会被真正使用，
+因为读了和没读的回答看起来一样。参见 sun-tzu 的写法（引用篇名+判据 / 三段式：计名+施用要点+失败征兆）。
 
 ## 防空壳验收标准
 
@@ -73,33 +98,25 @@ description: >
 - frontmatter 的 `name` 必须与目录名完全一致。
 - description 不重复主 SKILL.md 路由表中的匹配条件（匹配规则单一事实源在主 SKILL.md），只写模型自身定位与排除边界。
 - 「何时不适用」写具体场景，不写"问题太简单时"这类空话。
-- 与其他易混模型存在职责重叠时，在 description 里写明分工句（照 `macro-thinking` 的写法）。
+- **分工句写在「何时不适用」段**（不必写进 description），且必须**双向对称**：
+  A 声明"与 B 的分工"时 B 也要声明。单向声明会被 `validate.py` 判 FAIL——
+  因为调度时只读被调方那一份，反向缺失等于该声明无效。
+- 分工句统一句式（便于人工核对与脚本校验）：
+  `- 与<B>的分工：<B>管**<X>**；本模型管**<Y>**；判据是「<一句话分流判据>」。`
 
-## 验收命令
+## 验收
 
-新增或修改 subskill 后，在技能根目录执行，全部无输出即通过：
+结构验收统一跑：
 
 ```bash
-# 1) 目录数与主 SKILL.md 路由表行数一致
-ls -d subskills/*/ | wc -l
-grep -cE '^\| [a-z-]+ \| ' SKILL.md
-
-# 2) frontmatter name 与目录名一致
-for d in subskills/*/; do dir=$(basename "$d"); name=$(grep -m1 '^name: ' "$d/SKILL.md" | sed 's/name: //'); [ "$dir" != "$name" ] && echo "MISMATCH: $dir vs $name"; done
-
-# 3) 路由表与目录名完全一致
-diff <(ls -d subskills/*/ | sed 's|subskills/||;s|/||' | sort) \
-     <(grep -oE '^\| [a-z-]+ \| ' SKILL.md | sed 's/| //g' | awk '{print $1}' | sort)
-
-# 4) 五段式齐备（每份应输出 5）
-for d in subskills/*/; do grep -c '^## ' "$d/SKILL.md"; done | sort -u
-
-# 5) 限长字段覆盖率应为 100%
-grep -L "限长" subskills/*/SKILL.md
-
-# 6) 防空壳：抽查内容种子
-grep -l "孟母三迁" subskills/environment/SKILL.md
+python3 scripts/validate.py
 ```
 
-注意：macOS 自带 grep 不支持 `\|` 交替语法，务必用 `grep -E`。
+12 项检查覆盖：目录↔路由表双向差集、frontmatter 键与 name、五段式齐备、逐文件逐段条目数区间、
+限长字段、分工对称性、references 引用可达与无孤儿、reference 行数区间、内容种子命中、套话词扫描。
+支持 `--only <id>...` 局部跑、`--verbose` 看明细。退出码 0=无 FAIL / 1=有 FAIL。
 
+**新增 subskill 后必须同步改三处**（缺任一处会被 dir-table 或 seeds 抓出）：
+1. `SKILL.md` §8 路由表
+2. `references/seeds.json` 的字面锚点
+3. 本文件的种子表
