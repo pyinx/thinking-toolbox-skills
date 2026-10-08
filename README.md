@@ -76,7 +76,6 @@ thinking-toolbox-skills/           # 项目根即技能根 BASE
 ## 分发（软链到宿主）
 
 ```bash
-ln -s /Users/zyb/Documents/git/yunsiweilai.com/agent-skills/thinking-toolbox-skills ~/.workbuddy/skills/thinking-toolbox
 # 如需分发到其他宿主：
 # ln -s <本目录> ~/.claude/skills/thinking-toolbox
 # ln -s <本目录> ~/.agents/skills/thinking-toolbox
